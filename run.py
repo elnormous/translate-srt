@@ -9,12 +9,12 @@ target_language = os.getenv('TARGET_LANGUAGE')
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
 def get_lines():
-    with open("input.srt", "r") as file:
+    with open("input.srt", "r", encoding="utf-8") as file:
         lines = file.readlines()
     return lines
 
 def get_prompt(source_language, target_language, text):
-    with open("prompt.txt", "r") as file:
+    with open("prompt.txt", "r", encoding="utf-8") as file:
         prompt = file.read()
     prompt = prompt.replace("{sourceLanguage}", source_language)
     prompt = prompt.replace("{targetLanguage}", target_language)
@@ -68,7 +68,7 @@ async def main():
     tasks = [translate(index + 1, len(blocks), block) for index, block in enumerate(blocks)]
     result = await asyncio.gather(*tasks)
 
-    with open("output.srt", "w") as file:
+    with open("output.srt", "w", encoding="utf-8") as file:
         for line in result:
             file.write(line)
 
