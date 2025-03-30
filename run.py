@@ -6,8 +6,11 @@ max_blocks = 50
 
 source_language = os.getenv('SOURCE_LANGUAGE')
 target_language = os.getenv('TARGET_LANGUAGE')
+
+print(f"Translating from {source_language} to {target_language}...")
+
 api_key = os.getenv('OPENAI_API_KEY')
-client = openai.OpenAI(api_key=api_key)
+client = openai.AsyncOpenAI(api_key=api_key)
 
 def get_lines():
     with open("input.srt", "r", encoding="utf-8") as file:
@@ -29,7 +32,7 @@ async def get_completion(prompt, model="gpt-3.5-turbo"):
         messages=messages,
         temperature=0, # this is the degree of randomness of the model's output
     )
-    return response.choices[0].message["content"]
+    return response.choices[0].message.content
 
 async def translate(number, total, block):
     print(f"""Start #{number} of {total}...""")
