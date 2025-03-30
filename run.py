@@ -6,7 +6,8 @@ max_blocks = 50
 
 source_language = os.getenv('SOURCE_LANGUAGE')
 target_language = os.getenv('TARGET_LANGUAGE')
-openai.api_key = os.getenv('OPENAI_API_KEY')
+api_key = os.getenv('OPENAI_API_KEY')
+client = openai.OpenAI(api_key=api_key)
 
 def get_lines():
     with open("input.srt", "r", encoding="utf-8") as file:
@@ -23,7 +24,7 @@ def get_prompt(source_language, target_language, text):
 
 async def get_completion(prompt, model="gpt-3.5-turbo"):
     messages = [{"role": "user", "content": prompt}]
-    response = await openai.ChatCompletion.acreate(
+    response = await client.chat.completions.create(
         model=model,
         messages=messages,
         temperature=0, # this is the degree of randomness of the model's output
