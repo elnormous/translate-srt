@@ -21,9 +21,10 @@ This is an example implementation for translating .srt files using the ChatGPT A
    $ export OPENAI_API_KEY=...
    ```
 
-5. Define your language.
+5. Define your languages.
 
    ```bash
+   $ export SOURCE_LANGUAGE="English"
    $ export TARGET_LANGUAGE="Korean"
    ```
 

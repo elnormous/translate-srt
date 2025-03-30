@@ -4,7 +4,8 @@ import asyncio
 
 max_blocks = 50
 
-language = os.getenv('TARGET_LANGUAGE')
+source_language = os.getenv('SOURCE_LANGUAGE')
+target_language = os.getenv('TARGET_LANGUAGE')
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
 def get_lines():
@@ -12,10 +13,11 @@ def get_lines():
         lines = file.readlines()
     return lines
 
-def get_prompt(language, text):
+def get_prompt(source_language, target_language, text):
     with open("prompt.txt", "r") as file:
         prompt = file.read()
-    prompt = prompt.replace("{language}", language)
+    prompt = prompt.replace("{sourceLanguage}", source_language)
+    prompt = prompt.replace("{targetLanguage}", target_language)
     prompt = prompt.replace("{text}", text)
     return prompt
 
@@ -28,7 +30,7 @@ async def get_completion(prompt, model="gpt-3.5-turbo"):
     )
     return response.choices[0].message["content"]
 
-async def translate(language, number, total, block):
+async def translate(number, total, block):
     print(f"""Start #{number} of {total}...""")
 
     result = await get_completion(block)
@@ -57,13 +59,13 @@ async def main():
         if len(line.rstrip()) == 0 and len(text) > 0:
             current_number_of_blocks += 1
             if current_number_of_blocks >= max_blocks:
-                blocks += [get_prompt(language, text)]
+                blocks += [get_prompt(source_language, target_language, text)]
                 current_number_of_blocks = 0
                 text = ""
     if len(text) > 0:
-        blocks += [get_prompt(language, text)]
+        blocks += [get_prompt(source_language, target_language, text)]
 
-    tasks = [translate(language, index + 1, len(blocks), block) for index, block in enumerate(blocks)]
+    tasks = [translate(index + 1, len(blocks), block) for index, block in enumerate(blocks)]
     result = await asyncio.gather(*tasks)
 
     with open("output.srt", "w") as file:
